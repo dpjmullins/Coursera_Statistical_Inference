@@ -1,0 +1,150 @@
+---
+title: "Course Project for the Statistical Inference Course as part of the Data Science Specialisation on Coursera"
+author: "David Mullins"
+output: pdf_document
+---
+
+## Overview
+
+There are two tasks for this course project. The first is a simulation exercise using the exponential distribution. The second is a basic inferential data analysis.
+
+```{r set_working_dir}
+## Set the working directory for the analysis 
+setwd("/home/david/Desktop/Coursera_DataScience/Statistical_inference_course_project")
+```
+
+## Part 1 - Simulation Exercise
+
+```{r simulate_exp_data}
+## Simulate data for an exponential distribution
+
+### Set variables
+num_obs <- 40
+lambda <- 0.2
+num_simulations <- 1000
+rseed <- set.seed(1) ## Set the random seed for reproducibility
+
+## Simulate the data from the exponential distribution and arrange as a matrix
+exp_sim.matrix <- matrix( rexp(num_obs*num_simulations, rate = lambda), num_simulations)
+
+mns <- apply(exp_sim.matrix, 1, mean) ## Calculate the mean for each sample
+vars <- apply(exp_sim.matrix, 1, var) ## Calculate the variance for each sample
+
+```
+
+### Sample Mean versus Theoretical Mean
+
+The theoretical mean for the exponential distribution is 1/lambda. This works out as 5. 
+
+```{r theoretical_mean}
+## theoretical mean
+tmean <- 1/lambda
+tmean
+```
+
+The sample mean for the 1,000 simulated distributions is 4.99.
+
+```{r sample_mean}
+## Summary stats for the collective means of each simulated distribution
+summary(mns)
+smean <- mean(mns)
+smean
+```
+
+The below plot shows the distribution of the sample means of 1,000 simulated exponential distributions (with n=40 for each simulation). The theoretical mean is plotted in green at x=5. The sample mean is shown in red at x=4.99.
+
+```{r mean_plot}
+hist(
+    x = mns,
+    breaks = 20,
+    freq = FALSE,
+    main = "Means of 1000 simulated exponential distributions",
+    xlab = "Sample Means"
+)
+abline(v = tmean, col = "green")
+abline(v = smean, col =  "red")
+```
+
+### Sample Variance versus Theoretical Variance
+
+The theoretical standard deviation for the exponential distribution is 1/lambda. This works out as 5. The variance is the standard deviation squared. Therefore, the theoretical variance of the mean is 25.
+
+```{r theoretical_variance}
+## theoretical variance
+tvar <- (1/lambda)^2
+tvar
+```
+
+The sample variance of the means for the 1,000 simulated distributions is 25.06.
+
+```{r sample_variance}
+## Summary stats for the collective means of each simulated distribution
+summary(vars)
+## sample variance
+svar <- mean(vars)
+svar
+```
+
+The below plot shows the distribution of the sample variance of 1,000 simulated exponential distributions (with n=40 for each simulation). The theoretical variance is plotted in green at x=25. The mean sample variance is shown in red at x=25.06.
+
+```{r variance_plot}
+hist(
+    x = vars,
+    breaks = 20,
+    freq = FALSE,
+    main = "Sample variances of 1000 simulated exponential distributions",
+    xlab = "Sample Variances"
+)
+abline(v = tvar, col = "green")
+abline(v = svar, col =  "red")
+```
+
+### Investigate Normality of the Distribution
+
+The mean and median are approximately the same, which indicates normality. The histogram of the simulated data points seems to have half a bell-shaped curve. This also indicates normality. In the "Mean qqplot" the theoretical mean (green line) and the qqline of the sample means (red line) intersect at 0 on the x-axis. This fact, and that most of the data points lie on the red qqline is an indication of normality. A similar case is observed in the "Variances qqplot". It can be said that the distribution of the data is approximately normal.
+
+```{r normality}
+## If the mean and median are approximately the same, this is an indication of normality
+mean(mns); median(mns)
+
+## Plot a histogram of the distribution of the underlying data
+hist(
+    x = exp_sim.matrix,
+    breaks = 30,
+    freq = F,
+    main = "Distribution of the simulated data points",
+    xlab = "Exponential Data Values"    
+)
+
+## qqplot of the means distribution
+qqnorm(
+    mns,  
+    main = "Means qqplot",
+    xlab = "Theoretical Mean", 
+    ylab = "Sample Means"
+)
+qqline(mns, col = "red")
+abline(h = tmean, col = "green")
+legend(
+    "topleft", 
+    lty = 1, 
+    col = c("red", "green"), 
+    legend = c("Sample quantiles line of mean", "theoretical mean")
+)
+
+## qqplot of the variances distribution
+qqnorm(
+    vars,  
+    main = "Variances qqplot",
+    xlab = "Theoretical Variance", 
+    ylab = "Sample Variances"
+)
+qqline(vars, col = "red")
+abline(h = tvar, col = "green")
+legend(
+    "topleft", 
+    lty = 1, 
+    col = c("red", "green"), 
+    legend = c("Sample quantiles line of variance", "theoretical variance")
+)
+```
